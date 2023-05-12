@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/aniket0951/order-services/config"
 	"github.com/aniket0951/order-services/routers"
 	"github.com/gin-gonic/gin"
 )
@@ -12,7 +11,6 @@ func main() {
 
 	router.SetTrustedProxies(nil)
 
-	defer config.CloseClientDB()
 
 	router.Static("static", "static")
 
