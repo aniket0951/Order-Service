@@ -1,81 +1,69 @@
 package config
 
-import (
-	"context"
-	"fmt"
-	"log"
-	"os"
-	"time"
+// func LoadEnv() {
+// 	err := godotenv.Load(".env")
 
-	"github.com/joho/godotenv"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
-)
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// }
 
-func LoadEnv() {
-	err := godotenv.Load(".env")
+// func EnvMongoURI() string {
+// 	LoadEnv()
+// 	var dbURL = os.Getenv("DB_URL")
 
-	if err != nil {
-		panic(err)
-	}
-}
+// 	return dbURL
+// }
 
-func EnvMongoURI() string {
-	LoadEnv()
-	var dbURL = os.Getenv("DB_URL")
+// var client *mongo.Client
 
-	return dbURL
-}
+// func ResolveClientDB() *mongo.Client {
+// 	if client != nil {
+// 		return client
+// 	}
 
-var client *mongo.Client
+// 	var err error
 
-func ResolveClientDB() *mongo.Client {
-	if client != nil {
-		return client
-	}
+// 	clientOptions := options.Client().ApplyURI(EnvMongoURI())
+// 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+// 	defer cancel()
+// 	client, err = mongo.Connect(ctx, clientOptions)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
 
-	var err error
+// 	// check the connection
+// 	err = client.Ping(context.Background(), nil)
 
-	clientOptions := options.Client().ApplyURI(EnvMongoURI())
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	client, err = mongo.Connect(ctx, clientOptions)
-	if err != nil {
-		log.Fatal(err)
-	}
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
 
-	// check the connection
-	err = client.Ping(context.Background(), nil)
+// 	fmt.Println("Connection established...")
+// 	return client
+// }
 
-	if err != nil {
-		log.Fatal(err)
-	}
+// func CloseClientDB() {
+// 	if client == nil {
+// 		return
+// 	}
 
-	fmt.Println("Connection established...")
-	return client
-}
+// 	err := client.Disconnect(context.TODO())
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
 
-func CloseClientDB() {
-	if client == nil {
-		return
-	}
+// 	// TODO optional you can log your closed MongoDB client
+// 	fmt.Println("Connection to MongoDB closed.")
+// }
 
-	err := client.Disconnect(context.TODO())
-	if err != nil {
-		log.Fatal(err)
-	}
+// // DB Client instance
+// var DB = ResolveClientDB()
 
-	// TODO optional you can log your closed MongoDB client
-	fmt.Println("Connection to MongoDB closed.")
-}
-
-// DB Client instance
-var DB = ResolveClientDB()
-
-// GetCollection getting database collections
-func GetCollection(client *mongo.Client, collectionName string) *mongo.Collection {
-	// var local = "golangAPI"
-	var remote = "mautodb"
-	collection := client.Database(remote).Collection(collectionName)
-	return collection
-}
+// // GetCollection getting database collections
+// func GetCollection(client *mongo.Client, collectionName string) *mongo.Collection {
+// 	// var local = "golangAPI"
+// 	var remote = "mautodb"
+// 	collection := client.Database(remote).Collection(collectionName)
+// 	return collection
+// }
