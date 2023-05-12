@@ -45,6 +45,7 @@ type OrderCarts struct {
 	Id        primitive.ObjectID `json:"id" bson:"_id,omitempty"`
 	OrderId   primitive.ObjectID `json:"order_id" bson:"order_id"`
 	UserId    primitive.ObjectID `json:"user_id" bson:"user_id"`
+	OrderStatus string `json:"order_status" bson:"order_status"`
 	CreatedAt primitive.DateTime `json:"created_at" bson:"created_at"`
 	UpdatedAt primitive.DateTime `json:"updated_at" bson:"updated_at"`
 }

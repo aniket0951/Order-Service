@@ -2,25 +2,16 @@ package repositories
 
 import (
 	"context"
-	"os"
 
-	"github.com/aniket0951/order-services/config"
 	"github.com/aniket0951/order-services/models"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
-var (
-	ordersConnection       = config.GetCollection(config.DB, os.Getenv("ORDERS"))
-	orderCartConnection    = config.GetCollection(config.DB, os.Getenv("ORDER_CART"))
-	orderTrackConnection   = config.GetCollection(config.DB, os.Getenv("ORDER_TRACK"))
-	orderHistoryConnection = config.GetCollection(config.DB, os.Getenv("ORDER_HISTORY"))
-)
 
 type OrderRepository interface {
 	Init() (context.Context, context.CancelFunc)
-	PlaceSingleOrder(order models.Orders) (*mongo.InsertOneResult, error)
-	AddToCartOrder(order models.OrderCarts) error
+	PlaceSingleOrder(order models.Orders) 
+	AddToCartOrder(order models.OrderCarts) 
 	CheckDuplicateOrderToAddCart(orderId, userId primitive.ObjectID) error
 	DeleteCartOrder(orderId primitive.ObjectID) error
 	DeleteOrder(orderId primitive.ObjectID) error
@@ -28,26 +19,26 @@ type OrderRepository interface {
 
 	UserCartItem(userId primitive.ObjectID) ([]models.OrderCarts, error)
 	UpdateOrderStatus(status string, orderId primitive.ObjectID) error
-	CreateOrderTrack(orderTrack models.OrderTrack) error
-	CreateOrderHistory(orderData models.OrderHistory) error
+	CreateOrderTrack(orderTrack models.OrderTrack) 
+	CreateOrderHistory(orderData models.OrderHistory) 
 
 	GetAllOrderTrack(orderId primitive.ObjectID) ([]models.OrderTrack, error)
 	GetOrderById(orderId primitive.ObjectID) (models.Orders, error)
-	DeleteOrderFromTrack(orderId []primitive.ObjectID) error
+	DeleteOrderFromTrack(orderId []primitive.ObjectID) 
 }
 
 type orderRepository struct {
-	ordersCollection       *mongo.Collection
-	orderCartCollection    *mongo.Collection
-	orderTrackCollection   *mongo.Collection
-	orderHistoryCollection *mongo.Collection
+	Orders []models.Orders
+	OrderCarts []models.OrderCarts
+	OrderTrack []models.OrderTrack
+	OrderHistory []models.OrderHistory
 }
 
 func NewOrderRepository() OrderRepository {
 	return &orderRepository{
-		ordersCollection:       ordersConnection,
-		orderCartCollection:    orderCartConnection,
-		orderTrackCollection:   orderTrackConnection,
-		orderHistoryCollection: orderHistoryConnection,
+		Orders: []models.Orders{},
+		OrderCarts: []models.OrderCarts{},
+		OrderTrack: []models.OrderTrack{},
+		OrderHistory: []models.OrderHistory{},
 	}
 }

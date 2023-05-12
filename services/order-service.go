@@ -53,11 +53,8 @@ func (ser *orderService) PlaceSingleOrder(order dto.CreateOrderDTO) error {
 
 	orderToPlace := new(models.Orders).SetPlaceOrder(order, helper.PLACED)
 	orderToPlace.TotalPrice = float64(order.Price) * float64(order.Quantity)
-	_, err := ser.orderRepo.PlaceSingleOrder(orderToPlace)
-	if err != nil {
-		return err
-	}
-
+	ser.orderRepo.PlaceSingleOrder(orderToPlace)
+	
 	// updating product count by quantity
 	quantityStr := strconv.Itoa(int(order.Quantity))
 	countErr := ser.UpdateProductCount("decrease", quantityStr, order.ProductId)
@@ -88,10 +85,8 @@ func (ser *orderService) AddToCart(order dto.CreateOrderDTO) error {
 
 	orderToPlace := new(models.Orders).SetPlaceOrder(order, helper.CART)
 	orderToPlace.TotalPrice = float64(order.Price) * float64(order.Quantity)
-	_, err := ser.orderRepo.PlaceSingleOrder(orderToPlace)
-	if err != nil {
-		return err
-	}
+	ser.orderRepo.PlaceSingleOrder(orderToPlace)
+	
 
 	orderItem := models.OrderCarts{
 		OrderId:   orderToPlace.Id,
@@ -100,7 +95,8 @@ func (ser *orderService) AddToCart(order dto.CreateOrderDTO) error {
 		UpdatedAt: primitive.NewDateTimeFromTime(time.Now()),
 	}
 
-	return ser.orderRepo.AddToCartOrder(orderItem)
+	ser.orderRepo.AddToCartOrder(orderItem)
+	return nil
 }
 
 // update product counts accordingly
@@ -156,7 +152,8 @@ func (ser *orderService) CreateOrderTrack(order models.Orders) error {
 	orderTrack.CreatedAt = primitive.NewDateTimeFromTime(time.Now())
 	orderTrack.UpdatedAt = primitive.NewDateTimeFromTime(time.Now())
 
-	return ser.orderRepo.CreateOrderTrack(orderTrack)
+	ser.orderRepo.CreateOrderTrack(orderTrack)
+	return nil
 }
 
 func (ser *orderService) UpdateOrderStatus(orderId, status string) error {
@@ -173,13 +170,13 @@ func (ser *orderService) UpdateOrderStatus(orderId, status string) error {
 
 	orderTrack := new(models.OrderTrack).SetOrderTrack(orderObjId, status)
 
-	trackErr := ser.orderRepo.CreateOrderTrack(orderTrack)
+	ser.orderRepo.CreateOrderTrack(orderTrack)
 
 	if status == helper.COMPLETED {
 		ser.CreateOrderHistory(orderObjId)
 	}
 
-	return trackErr
+	return nil
 }
 
 // make a order history after order has been completed
@@ -199,11 +196,7 @@ func (ser *orderService) CreateOrderHistory(orderId primitive.ObjectID) error {
 	orderHistory := new(models.OrderHistory).SetOrderHistory(order, orderTrack)
 
 	// create a track history
-	hisErr := ser.orderRepo.CreateOrderHistory(orderHistory)
-
-	if hisErr != nil {
-		return hisErr
-	}
+	ser.orderRepo.CreateOrderHistory(orderHistory)
 
 	// remove all data
 	delErr := ser.orderRepo.DeleteOrder(orderId)
@@ -212,8 +205,8 @@ func (ser *orderService) CreateOrderHistory(orderId primitive.ObjectID) error {
 		return delErr
 	}
 
-	delTrackErr := ser.orderRepo.DeleteOrderFromTrack([]primitive.ObjectID{orderId})
-	return delTrackErr
+	ser.orderRepo.DeleteOrderFromTrack([]primitive.ObjectID{orderId})
+	return nil
 }
 
 // if order get cancel then increase a product count
